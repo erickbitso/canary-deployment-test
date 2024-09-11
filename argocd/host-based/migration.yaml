@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/bitsoex/safe-rollouts-poc.git
+    repoURL: https://github.com/erickbitso/canary-deployment-test.git
     targetRevision: HEAD
     path: scenarios/host-based-argocd/migration
   destination:
