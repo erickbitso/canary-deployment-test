@@ -1,0 +1,78 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: service-b-internal
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  gateways:
+  - mesh
+  hosts:
+  - service-b.default.svc.cluster.local
+  http:
+  - name: primary-http
+    match:
+    - port: 8080
+    route:
+    - destination:
+        host: service-b-stable.default.svc.cluster.local
+        port:
+          number: 8080
+      weight: 100
+    - destination:
+        host: service-b-canary.default.svc.cluster.local
+        port:
+          number: 8080
+      weight: 0
+  # - name: primary-grpc
+  #   match:
+  #   - port: 8021
+  #   route:
+  #   - destination:
+  #       host: service-b-stable.default.svc.cluster.local
+  #       port:
+  #         number: 8021
+  #     weight: 100
+  #   - destination:
+  #       host: service-b-canary.default.svc.cluster.local
+  #       port:
+  #         number: 8021
+  #     weight: 0
+  # tcp:
+  # - match:
+  #   - port: 8000
+  #   route:
+  #   - destination:
+  #       host: service-b-stable.default.svc.cluster.local
+  #       port:
+  #         number: 8000
+  #     weight: 100
+  #   - destination:
+  #       host: service-b-canary.default.svc.cluster.local
+  #       port:
+  #         number: 8000
+  #     weight: 0
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: service-b
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  gateways:
+  - mygateway
+  hosts:
+  - "*"
+  http:
+  - name: primary
+    match:
+    - uri:
+        prefix: /hello
+    route:
+    - destination:
+        host: service-b-stable.default.svc.cluster.local
+      weight: 100
+    - destination:
+        host: service-b-canary.default.svc.cluster.local
+      weight: 0
