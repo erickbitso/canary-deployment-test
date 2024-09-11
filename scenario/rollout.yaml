@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: service-b
-        image: service-b:blue
+        image: service-b:green
         imagePullPolicy: Never
         ports:
         - name: grpc
@@ -44,4 +44,13 @@ spec:
           requests:
             memory: 32Mi
             cpu: 50m
-
+        livenessProbe:
+          failureThreshold: 10
+          grpc:
+              port: 8201
+              service: ""
+        readinessProbe:
+          failureThreshold: 10
+          grpc:
+              port: 8201
+              service: ""
