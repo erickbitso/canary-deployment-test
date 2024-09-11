@@ -58,6 +58,9 @@ spec:
       - name: service-b
         image: service-b:NOTAG
         imagePullPolicy: Never
+        env:
+        - name: SERVER_PORT
+          value: "8080"
         ports:
         - name: grpc
           containerPort: 8201
