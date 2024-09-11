@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myservice
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/bitsoex/safe-rollouts-poc.git
+    targetRevision: HEAD
+    path: scenarios/host-based-argocd/initial
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  ignoreDifferences:
+    - group: "*"
+      kind: "*"
+      managedFieldsManagers:
+      - rollouts-controller
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+    - RespectIgnoreDifferences=true
+    - PruneLast=true
