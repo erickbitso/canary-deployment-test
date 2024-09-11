@@ -23,11 +23,6 @@ spec:
         kind: VirtualService
         managedFieldsManagers:
           - rollouts-controller
-      - group: argoproj.io
-        jqPathExpressions:
-          - .spec.template.spec.containers[] | .livenessProbe.grpc.service
-          - .spec.template.spec.containers[] | .readinessProbe.grpc.service
-          - .spec.template.spec.containers[] | .startupProbe.grpc.service
   syncPolicy:
       automated:
           allowEmpty: true
