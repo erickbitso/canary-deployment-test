@@ -4,7 +4,7 @@ resources:
   - manifest.yaml
 commonAnnotations:
   bitso.com/entity-repository-name: service-b
-  bitso.com/config-git-commit: blue
+  bitso.com/config-git-commit: green
   bitso.com/entity-deployment-config-path: deployments/service-b
 commonLabels: {}
 patches:
@@ -27,7 +27,7 @@ patches:
 images:
   - name: service-b
     newName: service-b
-    newTag: blue
+    newTag: green
 generatorOptions:
   disableNameSuffixHash: true
   labels:
