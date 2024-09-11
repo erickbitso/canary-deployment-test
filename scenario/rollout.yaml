@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: service-b
-        image: service-b:green
+        image: service-b:blue
         imagePullPolicy: Never
         ports:
         - name: grpc
