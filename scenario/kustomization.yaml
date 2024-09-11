@@ -65,16 +65,16 @@ patches:
     patch: |
       - op: add
         path: /spec/template/metadata/annotations/app.komodor.com~1service-b.ref
-        value: ba0bef4c2
+        value: blue
   - target:
       kind: Rollout
     patch: |
       - op: add
         path: /spec/template/metadata/annotations/app.komodor.com~1service-b.ref
-        value: ba0bef4c2
+        value: blue
 images:
-  - name: 115072226992.dkr.ecr.us-east-2.amazonaws.com/bitso/service-b
-    newName: 115072226992.dkr.ecr.us-east-2.amazonaws.com/bitso/service-b
+  - name: service-b
+    newName: service-b
     newTag: blue
 generatorOptions:
   disableNameSuffixHash: true
