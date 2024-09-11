@@ -25,7 +25,7 @@ func (s *server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloR
 }
 
 func main() {
-	lis, err := net.Listen("tcp", ":8021") // gRPC server on port 8021
+	lis, err := net.Listen("tcp", ":8201") // gRPC server on port 8201
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
@@ -42,7 +42,7 @@ func main() {
 	// Set the health status to SERVING for the default service (empty string)
 	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
 
-	fmt.Println("gRPC server is running on port 8021")
+	fmt.Println("gRPC server is running on port 8201")
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
