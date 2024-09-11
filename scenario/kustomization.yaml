@@ -24,54 +24,6 @@ patches:
         value:
           name: SERVER_PORT
           value: "8080"
-  - target:
-      kind: Deployment
-    patch: |
-      - op: add
-        path: /metadata/labels/tags.datadoghq.com~1version
-        value: blue
-  - target:
-      kind: Rollout
-    patch: |
-      - op: add
-        path: /metadata/labels/tags.datadoghq.com~1version
-        value: blue
-  - target:
-      kind: Deployment
-    patch: |
-      - op: add
-        path: /spec/template/metadata/labels/tags.datadoghq.com~1version
-        value: blue
-  - target:
-      kind: Rollout
-    patch: |
-      - op: add
-        path: /spec/template/metadata/labels/tags.datadoghq.com~1version
-        value: blue
-  - target:
-      kind: Deployment
-    patch: |
-      - op: add
-        path: /spec/template/metadata/annotations/apm.datadoghq.com~1env
-        value: '{"DD_ENV":"dev","DD_SERVICE":"service-b","DD_VERSION":"blue"}'
-  - target:
-      kind: Rollout
-    patch: |
-      - op: add
-        path: /spec/template/metadata/annotations/apm.datadoghq.com~1env
-        value: '{"DD_ENV":"dev","DD_SERVICE":"service-b","DD_VERSION":"blue"}'
-  - target:
-      kind: Deployment
-    patch: |
-      - op: add
-        path: /spec/template/metadata/annotations/app.komodor.com~1service-b.ref
-        value: blue
-  - target:
-      kind: Rollout
-    patch: |
-      - op: add
-        path: /spec/template/metadata/annotations/app.komodor.com~1service-b.ref
-        value: blue
 images:
   - name: service-b
     newName: service-b
