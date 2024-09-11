@@ -1,0 +1,172 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: service-b
+spec:
+  host: service-b.default.svc.cluster.local
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: mygateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: service-b
+spec:
+  strategy:
+    canary:
+      canaryService: service-b-canary
+      stableService: service-b-stable
+      trafficRouting:
+        istio:
+          virtualServices:
+          - name: service-b
+            routes:
+            - primary
+          - name: service-b-internal
+            routes:
+            - primary-http
+            #- primary-grpc
+      steps:
+        - setWeight: 10
+        - pause: {}
+        - setWeight: 40
+        - pause: {}
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: service-b
+  template:
+    metadata:
+      labels:
+        app: service-b
+        istio-injection: enabled
+    spec:
+      containers:
+      - name: service-b
+        image: service-b:blue
+        imagePullPolicy: Never
+        ports:
+        - name: grpc
+          containerPort: 8201
+          protocol: TCP
+        resources:
+          requests:
+            memory: 32Mi
+            cpu: 50m
+        livenessProbe:
+          failureThreshold: 10
+          grpc:
+              port: 8201
+              service: ""
+        readinessProbe:
+          failureThreshold: 10
+          grpc:
+              port: 8201
+              service: ""
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-b
+spec:
+  ports:
+  - port: 8021
+    targetPort: grpc
+    protocol: TCP
+    name: grpc
+  selector:
+    app: service-b
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+  name: service-b-canary
+spec:
+  ports:
+  - port: 8021
+    targetPort: grpc
+    protocol: TCP
+    name: grpc
+  selector:
+    app: service-b
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+  name: service-b-stable
+spec:
+  ports:
+  - port: 8021
+    targetPort: grpc
+    protocol: TCP
+    name: grpc
+  selector:
+    app: service-b
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: service-b-internal
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  gateways:
+  - mesh
+  hosts:
+  - service-b.default.svc.cluster.local
+  http:
+  - name: primary-http
+    match:
+    - port: 8080
+    route:
+    - destination:
+        host: service-b-stable.default.svc.cluster.local
+        port:
+          number: 8080
+      weight: 100
+    - destination:
+        host: service-b-canary.default.svc.cluster.local
+        port:
+          number: 8080
+      weight: 0
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: service-b
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  gateways:
+  - mygateway
+  hosts:
+  - "*"
+  http:
+  - name: primary
+    match:
+    - uri:
+        prefix: /hello
+    route:
+    - destination:
+        host: service-b-stable.default.svc.cluster.local
+      weight: 100
+    - destination:
+        host: service-b-canary.default.svc.cluster.local
+      weight: 0

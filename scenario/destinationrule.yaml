@@ -1,6 +1,0 @@
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  name: service-b
-spec:
-  host: service-b.default.svc.cluster.local
