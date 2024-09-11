@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/erickbitso/canary-deployment-test.git
     targetRevision: HEAD
-    path: scenarios/host-based-argocd/migration
+    path: scenario
   destination:
     server: https://kubernetes.default.svc
     namespace: default
