@@ -15,14 +15,31 @@ spec:
     server: https://kubernetes.default.svc
     namespace: default
   ignoreDifferences:
-    - group: "*"
-      kind: "*"
-      managedFieldsManagers:
-      - rollouts-controller
+      - group: ""
+        kind: Service
+        managedFieldsManagers:
+          - rollouts-controller
+      - group: networking.istio.io
+        kind: VirtualService
+        managedFieldsManagers:
+          - rollouts-controller
+      - group: argoproj.io
+        jqPathExpressions:
+          - .spec.template.spec.containers[] | .livenessProbe.grpc.service
+          - .spec.template.spec.containers[] | .readinessProbe.grpc.service
+          - .spec.template.spec.containers[] | .startupProbe.grpc.service
   syncPolicy:
-    automated:
-      selfHeal: true
-      prune: true
-    syncOptions:
-    - RespectIgnoreDifferences=true
-    - PruneLast=true
+      automated:
+          allowEmpty: true
+          prune: true
+          selfHeal: true
+      retry:
+          backoff:
+              duration: 5s
+              factor: 2
+              maxDuration: 3m
+          limit: 5
+      syncOptions:
+          - Validate=false
+          - RespectIgnoreDifferences=true
+          - PruneLast=true

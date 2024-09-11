@@ -1,0 +1,82 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - manifest.yaml
+commonAnnotations:
+  bitso.com/entity-repository-name: service-b
+  bitso.com/config-git-commit: blue
+  bitso.com/entity-deployment-config-path: deployments/service-b
+commonLabels: {}
+patches:
+  - target:
+      kind: Deployment
+    patch: |
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: SERVER_PORT
+          value: "8080"
+  - target:
+      kind: Rollout
+    patch: |
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: SERVER_PORT
+          value: "8080"
+  - target:
+      kind: Deployment
+    patch: |
+      - op: add
+        path: /metadata/labels/tags.datadoghq.com~1version
+        value: blue
+  - target:
+      kind: Rollout
+    patch: |
+      - op: add
+        path: /metadata/labels/tags.datadoghq.com~1version
+        value: blue
+  - target:
+      kind: Deployment
+    patch: |
+      - op: add
+        path: /spec/template/metadata/labels/tags.datadoghq.com~1version
+        value: blue
+  - target:
+      kind: Rollout
+    patch: |
+      - op: add
+        path: /spec/template/metadata/labels/tags.datadoghq.com~1version
+        value: blue
+  - target:
+      kind: Deployment
+    patch: |
+      - op: add
+        path: /spec/template/metadata/annotations/apm.datadoghq.com~1env
+        value: '{"DD_ENV":"dev","DD_SERVICE":"service-b","DD_VERSION":"blue"}'
+  - target:
+      kind: Rollout
+    patch: |
+      - op: add
+        path: /spec/template/metadata/annotations/apm.datadoghq.com~1env
+        value: '{"DD_ENV":"dev","DD_SERVICE":"service-b","DD_VERSION":"blue"}'
+  - target:
+      kind: Deployment
+    patch: |
+      - op: add
+        path: /spec/template/metadata/annotations/app.komodor.com~1service-b.ref
+        value: ba0bef4c2
+  - target:
+      kind: Rollout
+    patch: |
+      - op: add
+        path: /spec/template/metadata/annotations/app.komodor.com~1service-b.ref
+        value: ba0bef4c2
+images:
+  - name: 115072226992.dkr.ecr.us-east-2.amazonaws.com/bitso/service-b
+    newName: 115072226992.dkr.ecr.us-east-2.amazonaws.com/bitso/service-b
+    newTag: blue
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    bitso/generated-by: environment-transformation
